@@ -216,5 +216,31 @@ j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefo
 </div></footer>
 
 <div class="barra"><a href="https://wa.me/5521971238701?text=Ol%C3%A1%21%20Quero%20marcar%20uma%20avalia%C3%A7%C3%A3o%20na%20Fullmotion.">Marcar minha avaliação</a></div>
+<script>
+/* Marca a origem paga no texto do WhatsApp. Quem chega por anuncio traz
+   fbclid (Meta) ou gclid (Google) na URL; organico nao traz nada. O sufixo
+   entra no texto pre-preenchido e permite medir, conversa por conversa, qual
+   canal pagou por ela. Sem isso a LP inteira vira um bolo so na atribuicao. */
+(function () {
+  var q = new URLSearchParams(location.search);
+  var origemTrafego = "";
+  if (q.has("fbclid") || /facebook|ig|instagram|meta/i.test(q.get("utm_source") || "")) {
+    origemTrafego = " Vi o anúncio de vocês.";
+  } else if (q.has("gclid") || /google/i.test(q.get("utm_source") || "")) {
+    origemTrafego = " Achei vocês no Google.";
+  }
+  if (!origemTrafego) return;
+  document.querySelectorAll('a[href^="https://wa.me/"]').forEach(function (a) {
+    try {
+      var u = new URL(a.href);
+      var t = u.searchParams.get("text") || "";
+      if (t && t.indexOf(origemTrafego.trim()) === -1) {
+        u.searchParams.set("text", t + origemTrafego);
+        a.href = u.toString();
+      }
+    } catch (e) { /* link estranho: deixa como esta */ }
+  });
+})();
+</script>
 </body>
 </html>
